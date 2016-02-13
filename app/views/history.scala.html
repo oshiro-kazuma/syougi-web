@@ -1,4 +1,4 @@
-@()
+@(histories: Seq[domains.models.History])
 <!DOCTYPE html>
 <html lang="ja" dir="ltr">
 
@@ -33,21 +33,17 @@
                     <tr>
                         <th>対戦日時</th>
                         <th>勝者</th>
+                        <th>戦歴ID</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @for(h <- histories) {
                     <tr>
-                        <td>2016-01-01 12:55:00</td>
-                        <td>先手</td>
+                        <td>@h.time</td>
+                        <td>@h.winner</td>
+                        <td>@h.id.value</td>
                     </tr>
-                    <tr>
-                        <td>2016-01-01 12:55:00</td>
-                        <td>後手</td>
-                    </tr>
-                    <tr>
-                        <td>2016-01-01 12:55:00</td>
-                        <td>先手</td>
-                    </tr>
+                    }
                 </tbody>
             </table>
 

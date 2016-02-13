@@ -5,7 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /battle                     controllers.Application.battle
-GET     /history                    controllers.Application.history
+GET     /histories                  controllers.HistoryController.index
+POST    /histories                  controllers.HistoryController.create
+GET     /histories/:id              controllers.HistoryController.show(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

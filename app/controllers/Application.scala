@@ -13,8 +13,4 @@ class Application extends Controller {
     Ok(views.html.battle())
   }
 
-  def history = Action {
-    Ok(views.html.history())
-  }
-
 }
