@@ -622,12 +622,25 @@ ban.drawMovableZone = function(drawZone){
 
 ban.checkmate = function(battleResult) {
 
+
   if(battleResult == "win") {
     html = ban.player + " player win!!";
-  
+
   } else {
     html = ban.player + " player lose...";
   }
+
+  // post server side api
+  var winner_id = 0
+  if(ban.player == "North") {
+    winner_id = 1
+  } else {
+    winner_id = 2
+  }
+  $.post("/histories",{
+    'winner': winner_id,
+    'time': "2015-01-01 11:22"
+  });
 
   //ダイアログの表示
   $("body").append("<div id='endDialog'>"+ html +"</div>");
