@@ -14,6 +14,7 @@ trait HistoryRepository {
 
 object HistoryRepository {
 
+  // todo: Not implements. Please using of memory repository.
   lazy val ofJDBC: HistoryRepository = new HistoryRepositoryOnJDBC
 
   lazy val ofMemory: HistoryRepository = new HistoryRepositoryOnMemory
