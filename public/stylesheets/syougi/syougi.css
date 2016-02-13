@@ -1,0 +1,43 @@
+@CHARSET "utf8";
+
+/* 将棋盤のスタイル */
+#ban {
+  padding:0;
+  margin:0;
+  width: 520px;
+  height: 610px;
+  float: left;
+}
+
+/* マスのスタイル */
+#ban > div {
+  padding: 4px;
+  float: left;
+  background: orange;
+  /* マスのサイズ */
+  width: 47px; height: 54px;
+  /* ボーダーの分だけマイナスマージンを入れる */
+  margin: -1px 0 0 -1px;
+  border: solid #333333 1px;
+}
+
+/* 持ち駒盤のスタイル */
+.motiKoma {
+  padding:0;
+  margin:0;
+  width: 220px;
+  height: 310px;
+  float: left;
+}
+
+/* 持ち駒盤のマスのスタイル */
+.motiKoma > div {
+  padding: 4px;
+  /* float: left; */
+  background: orange;
+  /* マスのサイズ */
+  width: 42px; height: 49px;
+  /* ボーダーの分だけマイナスマージンを入れる */
+  margin: -1px 0 0 -1px;
+  border: solid #333333 1px;
+}

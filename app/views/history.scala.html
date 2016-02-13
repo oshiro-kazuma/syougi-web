@@ -21,37 +21,44 @@
 
     <div class="uk-grid" data-uk-grid-margin>
         <div class="uk-width-1-1 uk-text-center">
-            <h1 class="uk-heading-large">将棋</h1>
-            <p class="uk-text-large">将棋対戦ゲーム</p>
+            <h1 class="uk-heading-large">戦歴</h1>
+            <p class="uk-text-large">過去の戦歴</p>
         </div>
     </div>
 
     <div class="uk-grid" data-uk-grid-margin>
-        <div class="uk-width-medium-1-1 uk-push-1-1 uk-text-center">
-            <div class="uk-thumbnail uk-overlay-hover uk-border-circle" style="padding: 2px">
-                <img class="uk-border-circle" width="400" height="400" src="@routes.Assets.versioned("images/syougi.jpg")" alt="">
-            </div>
+        <div class="uk-width-medium-1-1 uk-push-1-1">
+            <table class="uk-table uk-table-hover uk-table-striped uk-table-condensed" style="background-color: rgba(255, 255, 255, 0.8);">
+                <thead>
+                    <tr>
+                        <th>対戦日時</th>
+                        <th>勝者</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2016-01-01 12:55:00</td>
+                        <td>先手</td>
+                    </tr>
+                    <tr>
+                        <td>2016-01-01 12:55:00</td>
+                        <td>後手</td>
+                    </tr>
+                    <tr>
+                        <td>2016-01-01 12:55:00</td>
+                        <td>先手</td>
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
     </div>
-
-    <div class="uk-grid" data-uk-grid-margin>
-        <div class="uk-width-medium-1-4 uk-push-1-4 uk-text-center">
-            <a href="battle" class="button"">対局</a>
-            <p>対局を開始する</p>
-        </div>
-        <div class="uk-width-medium-1-4 uk-push-1-4 uk-text-center">
-            <a href="history" class="button">戦歴</a>
-            <p>過去の対局の履歴を閲覧</p>
-        </div>
-    </div>
-
 
 </div>
 
 <div id="footer">
     <p id="github"><a href="https://github.com/oshiro-kazuma/syougi-web">github source</a></p>
 </div>
-
 
 </body>
 </html>
