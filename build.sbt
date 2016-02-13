@@ -6,7 +6,10 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.6"
 
+val scalazVersion = "7.2.0"
+
 libraryDependencies ++= Seq(
+  "org.scalaz" %% "scalaz-core" % scalazVersion,
   jdbc,
   cache,
   ws,
