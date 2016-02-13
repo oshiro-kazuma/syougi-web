@@ -28,6 +28,13 @@ li {
   margin:1em;
 }
 
+.top-logo {
+    box-shadow:rgba(148, 148, 148, 0.439216) 0px 0px 24px 3px;
+    -webkit-box-shadow:rgba(148, 148, 148, 0.439216) 0px 0px 24px 3px;
+    -moz-box-shadow:rgba(148, 148, 148, 0.439216) 0px 0px 24px 3px;
+}
+
+
 /*
  * フッター、ヘッダーなどレイアウト関係のスタイル
  */
@@ -88,11 +95,8 @@ li {
   margin-right: auto;
 }
 
-/* button */
-
 /* BUTTON CSS
 ------------------------------------------- */
-
 a.button{
   display:inline-block;
 
