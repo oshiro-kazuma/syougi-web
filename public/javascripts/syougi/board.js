@@ -73,12 +73,11 @@ var choicePiece = function(i,j) {
 
 var isMovable = function(i,j) {
   var movable = false;
-  for(var count = 0; count < board.movableZone.length; count++ ){
-    if((j == board.movableZone[count][0]) && (i == board.movableZone[count][1])) {
+  board.movableZone.forEach(function(zone) {
+    if((j == zone[0]) && (i == zone[1])) {
       movable = true;
-      break;
     }
-  }
+  })
   return movable;
 }
 
@@ -203,8 +202,8 @@ board.drawCapturedPiece = function(player) {
 
 //移動可能範囲に色を塗る
 board.drawMovableZone = function(doms){
-  doms.forEach(function(v,i){
-    v.css("background-color","#ff7373");
+  doms.forEach(function(dom){
+    dom.css("background-color","#ff7373");
   })
 
   board.movableSquareDomObj = doms;
@@ -262,15 +261,13 @@ var findCapturedPieceMovableZone = function() {
 }
 
 /**
- * 駒を移動できるマスの取得
+ * マスの座標からコマのDOMを取得
  */
-var findSquareDom = function(zone) {
+var findSquareDom = function(zones) {
   var doms = new Array;
-  for(var count = 0; count < zone.length; count++ ) {
-    var x = zone[count][0];
-    var y = zone[count][1];
-    doms.push($("#square" + y + x));
-  }
+  zones.forEach(function(zone) {
+    doms.push($("#square" + zone[1] + zone[0]));
+  })
   return doms;
 }
 
