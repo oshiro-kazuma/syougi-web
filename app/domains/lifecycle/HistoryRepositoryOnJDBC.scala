@@ -11,4 +11,5 @@ class HistoryRepositoryOnJDBC extends HistoryRepository {
 
   override def store(history: History): Unit = ???
 
+  override def countAll(): Int = ???
 }

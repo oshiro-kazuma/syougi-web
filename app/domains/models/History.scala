@@ -35,6 +35,10 @@ object History {
     repository.resolveAll()
   }
 
+  def countAll(): Reader[HistoryRepository, Int] = Reader { repository =>
+    repository.countAll()
+  }
+
   def store(history: History): Reader[HistoryRepository, Unit] = Reader { repository =>
     repository.store(history)
   }

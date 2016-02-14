@@ -1,11 +1,11 @@
-@()
+@(historyCount: Int)
 
 @views.html.layout {
 <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
 
     <div class="uk-grid" data-uk-grid-margin>
         <div class="uk-width-1-1 uk-text-center">
-            <h1 class="uk-heading-large">将棋</h1>
+            <h1 class="uk-heading-large">ザ・将棋</h1>
             <p class="uk-text-large">将棋対戦ゲーム</p>
         </div>
     </div>
@@ -16,6 +16,10 @@
                 <img class="uk-border-circle" width="400" height="400" src="@routes.Assets.versioned("images/syougi.jpg")" alt="">
             </div>
         </div>
+    </div>
+
+    <div style="text-align: center; margin: 3em;">
+        <h2>今までに @historyCount 回の対局がありました！</h2>
     </div>
 
     <div class="uk-grid" data-uk-grid-margin>

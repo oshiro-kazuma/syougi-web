@@ -8,6 +8,8 @@ trait HistoryRepository {
 
   def resolve(id: HistoryId): Option[History]
 
+  def countAll(): Int
+
   def store(history: History): Unit
 
 }

@@ -22,4 +22,5 @@ class HistoryRepositoryOnMemory extends HistoryRepository {
     storage.put(entity.id, entity)
   }
 
+  override def countAll(): Int = storage.size
 }
