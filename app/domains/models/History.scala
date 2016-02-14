@@ -19,16 +19,3 @@ case class History(
   time: DateTime,
   winner: Player
 )
-
-sealed trait Player { val value: Int}
-case object Black extends Player { val value = 1 }
-case object White extends Player { val value = 2 }
-case object Unknown extends Player { val value = 0 }
-
-object Player {
-  def apply(value: Int) = value match {
-    case 1 => Black
-    case 2 => White
-    case _ => Unknown
-  }
-}
