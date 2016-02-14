@@ -12,7 +12,7 @@ class HistoryRepositoryOnMemory extends HistoryRepository {
 
   override def resolveAll(): Seq[History] = storage.values.toSeq
 
-  override def resolveById(id: HistoryId): Option[History] = storage.get(id)
+  override def resolve(id: HistoryId): Option[History] = storage.get(id)
 
   override def store(history: History): Unit = {
     val entity: History = history.id.isDefined match {

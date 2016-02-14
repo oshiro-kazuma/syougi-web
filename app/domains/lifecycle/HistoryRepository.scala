@@ -6,7 +6,7 @@ trait HistoryRepository {
 
   def resolveAll(): Seq[History]
 
-  def resolveById(id: HistoryId): Option[History]
+  def resolve(id: HistoryId): Option[History]
 
   def store(history: History): Unit
 
