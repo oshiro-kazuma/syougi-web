@@ -2,14 +2,14 @@
 //TODO 二歩チェックが未実装
 
 //名前空間の定義
-var ban = {};
+var board = {};
 
 var findCapturedPieceMovableZone = function() {
   var zone = new Array();
   //駒を移動できる範囲の算出
   for(var x = 0; x < 9; x++) {
     for(var y = 0; y < 9; y++) {
-      if(ban.masu[x][y].piece == null) {
+      if(board.masu[x][y].piece == null) {
         zone.push([y,x]);
       }
     }
@@ -27,74 +27,70 @@ var pickMasuDom = function(zone) {
   return doms;
 }
 
-ban.onClickCapturedPiece = function(i, player) {
+board.onClickCapturedPiece = function(i, player) {
 
   //もち駒選択
-  if (ban.isSelectMode == false) {
-    if((ban.player == player) && (ban.capturedPiece[player][i] != null)) {
-      ban.selectedPiece.i = i;
-      ban.selectedPiece.j = player;
+  if (board.isSelectMode == false) {
+    if((board.player == player) && (board.capturedPiece[player][i] != null)) {
+      board.selectedPiece.i = i;
+      board.selectedPiece.j = player;
 
-      ban.movableZone = findCapturedPieceMovableZone();
-      var masu = pickMasuDom(ban.movableZone);
+      board.movableZone = findCapturedPieceMovableZone();
+      var masu = pickMasuDom(board.movableZone);
 
       //移動できる範囲に色を塗る
-      ban.drawMovableZone(masu);
-      ban.isSelectMode = true;
+      board.drawMovableZone(masu);
+      board.isSelectMode = true;
     }
   //もう一度クリックしたとき
   } else {
-    ban.isSelectMode = false;
+    board.isSelectMode = false;
 
     //移動可能範囲の背景色を戻す
-    for(var count = 0; count < ban.movableMasuDomObj.length; count++ ){
-      ban.movableMasuDomObj[count].css("background-color","orange");
+    for(var count = 0; count < board.movableMasuDomObj.length; count++ ){
+      board.movableMasuDomObj[count].css("background-color","orange");
     }
     //配列削除処理
-    ban.movableMasuDomObj.length = 0;
+    board.movableMasuDomObj.length = 0;
   }
 };
 
 //マスがクリックされた時の処理
-ban.onClickMasu = function(i,j) {
+board.onClickMasu = function(i,j) {
 
   // 移動する駒を選択する処理
-  if (ban.isSelectMode == false) {
-    console.log("debug!!! false");
-    if((ban.masu[i][j].piece != null) && (ban.masu[i][j].direction == ban.player)) {
-      ban.selectedPiece.i = i;
-      ban.selectedPiece.j = j;
-      ban.selectedPiece.domObj = $("#masu" + i + j);
+  if (board.isSelectMode == false) {
+    if((board.masu[i][j].piece != null) && (board.masu[i][j].direction == board.player)) {
+      board.selectedPiece.i = i;
+      board.selectedPiece.j = j;
+      board.selectedPiece.domObj = $("#masu" + i + j);
 
       //駒を移動できる範囲の算出
-      ban.movableZone = ban.getMovableZone(i, j);
-      var masu = pickMasuDom(ban.movableZone);
+      board.movableZone = board.getMovableZone(i, j);
+      var masu = pickMasuDom(board.movableZone);
 
       //移動できる範囲に色を塗る
-      ban.drawMovableZone(masu);
-      ban.isSelectMode = true;
+      board.drawMovableZone(masu);
+      board.isSelectMode = true;
     }
   //選択した駒を、移動する処理
   } else {
-    console.log("debug!!! true");
     //非選択状態にする
-    ban.isSelectMode = false;
+    board.isSelectMode = false;
 
     //移動可能範囲の背景色を戻す
-    for(var count = 0; count < ban.movableMasuDomObj.length; count++ ){
-      ban.movableMasuDomObj[count].css("background-color","orange");
+    for(var count = 0; count < board.movableMasuDomObj.length; count++ ){
+      board.movableMasuDomObj[count].css("background-color","orange");
     }
 
     //配列削除処理
-    ban.movableMasuDomObj.length = 0;
+    board.movableMasuDomObj.length = 0;
 
     //移動可能であるかの判定
     var isMovable = false;
-    console.log("debug mobable zone", ban.movableZone);
-    for(var count = 0; count < ban.movableZone.length; count++ ){
-      if((j == ban.movableZone[count][0]) && (i == ban.movableZone[count][1])) {
+    for(var count = 0; count < board.movableZone.length; count++ ){
+      if((j == board.movableZone[count][0]) && (i == board.movableZone[count][1])) {
         isMovable = true;
-        console.log("mobable ?", isMovable);
         break;
       }
     }
@@ -103,48 +99,48 @@ ban.onClickMasu = function(i,j) {
       $('#sound-file').get(0).play();
 
       //もち駒の場合
-      if(ban.selectedPiece.j == "South" || ban.selectedPiece.j == "North") {
+      if(board.selectedPiece.j == "South" || board.selectedPiece.j == "North") {
 
         //マスの情報を変更する
-        ban.masu[i][j] = {
-            "piece"    :ban.capturedPiece[ban.selectedPiece.j][ban.selectedPiece.i],
-            "direction"  :ban.player
+        board.masu[i][j] = {
+            "piece"    :board.capturedPiece[board.selectedPiece.j][board.selectedPiece.i],
+            "direction"  :board.player
         };
         //もち駒を削除
-        ban.capturedPiece[ban.selectedPiece.j].splice(ban.selectedPiece.i, 1);
-        ban.drawCapturedPiece(ban.player);
+        board.capturedPiece[board.selectedPiece.j].splice(board.selectedPiece.i, 1);
+        board.drawCapturedPiece(board.player);
 
         //駒の画像を変更する
-        var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage(ban.masu[i][j]);
+        var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.masu[i][j]);
         $("#masu" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
 
       //通常時
       } else {
         //勝利判定
-        if((ban.masu[i][j].piece == "王") && (ban.masu[i][j].direction != ban.player)) {
-          ban.checkmate("win");
+        if((board.masu[i][j].piece == "王") && (board.masu[i][j].direction != board.player)) {
+          board.checkmate("win");
         }
 
         //相手の駒を取った場合、もち駒に加える
-        if(ban.masu[i][j].piece != null) {
+        if(board.masu[i][j].piece != null) {
 
           //もち駒の描画処理
-          ban.capturedPiece[ban.player].push(ban.getPieceHead(ban.masu[i][j].piece));
-          ban.drawCapturedPiece(ban.player);
+          board.capturedPiece[board.player].push(board.getPieceHead(board.masu[i][j].piece));
+          board.drawCapturedPiece(board.player);
         }
         //駒移動処理
-        ban.movePiece(i, j);
+        board.movePiece(i, j);
 
       }
 
       //相手のターンに移る
-      if(ban.player == "North") {
-        ban.player = "South";
+      if(board.player == "North") {
+        board.player = "South";
         $("#playerInfo").html("南の番です．");
 
       } else {
-        ban.player = "North";
+        board.player = "North";
         $("#playerInfo").html("北の番です．");
       }
     }
@@ -152,80 +148,80 @@ ban.onClickMasu = function(i,j) {
 
 };
 //駒の移動処理
-ban.movePiece = function(i, j) {
+board.movePiece = function(i, j) {
 
   //マスの情報を変更する
-  ban.masu[i][j] = {
-      "piece"    :ban.masu[ban.selectedPiece.i][ban.selectedPiece.j].piece,
-      "direction"  :ban.player
+  board.masu[i][j] = {
+      "piece"    :board.masu[board.selectedPiece.i][board.selectedPiece.j].piece,
+      "direction"  :board.player
   };
 
-  ban.masu[ban.selectedPiece.i][ban.selectedPiece.j] = {
+  board.masu[board.selectedPiece.i][board.selectedPiece.j] = {
       "piece"     : null,
       "direction" : null
   };
 
   //成金処理
-  ban.narikin({
-    "src_i" : ban.selectedPiece.i,
-    "src_j" : ban.selectedPiece.j,
+  board.narikin({
+    "src_i" : board.selectedPiece.i,
+    "src_j" : board.selectedPiece.j,
     "dst_i" : i,
     "dst_j" : j,
-    "player" : ban.player,
-    "piece" : ban.masu[i][j].piece
+    "player" : board.player,
+    "piece" : board.masu[i][j].piece
   });
 
   //マスの画像を変更する
-  var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage(ban.masu[i][j]);
-  $("#masu" + ban.selectedPiece.i + ban.selectedPiece.j).html("");
+  var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.masu[i][j]);
+  $("#masu" + board.selectedPiece.i + board.selectedPiece.j).html("");
   $("#masu" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
 };
 
 //成金処理
 // TODO: と金に成のは強制じゃないらしい。ユーザーに選ばせる必要あり。
-ban.narikin = function(data) {
+board.narikin = function(data) {
 
   if(data.player == "North"){
     if((data.dst_j >= 0 && data.dst_j < 3) || (data.src_j >= 0 && data.src_j < 3)) {
-      ban.setNarikin(data.dst_i, data.dst_j, data.piece);
+      board.setNarikin(data.dst_i, data.dst_j, data.piece);
     }
 
   } else {
     if((data.dst_j > 5 && data.dst_j < 9) || (data.src_j > 5 && data.src_j < 9)) {
-      ban.setNarikin(data.dst_i, data.dst_j, data.piece);
+      board.setNarikin(data.dst_i, data.dst_j, data.piece);
     }
   }
 
 };
 
 //駒裏返し処理
-ban.setNarikin = function (i, j, piece) {
+board.setNarikin = function (i, j, piece) {
   switch(piece)  {
     case '飛':
-      ban.masu[i][j].piece = '竜';
+      board.masu[i][j].piece = '竜';
       break;
     case '角':
-      ban.masu[i][j].piece = '馬';
+      board.masu[i][j].piece = '馬';
       break;
     case '歩':
-      ban.masu[i][j].piece = 'と';
+      board.masu[i][j].piece = 'と';
       break;
     case '銀':
-      ban.masu[i][j].piece = "成銀";
+      board.masu[i][j].piece = "成銀";
       break;
     case '桂':
-      ban.masu[i][j].piece = '圭';
+      board.masu[i][j].piece = '圭';
       break;
     case '香':
-      ban.masu[i][j].piece = '杏';
+      board.masu[i][j].piece = '杏';
       break;
     default:
   }
 };
 
 //駒の表を取得する
-ban.getPieceHead = function (piece) {
+board.getPieceHead = function (piece) {
 
   switch(piece)  {
     case '竜':
@@ -253,7 +249,7 @@ ban.getPieceHead = function (piece) {
 };
 
 //駒の描写処理
-ban.draw = function () {
+board.draw = function () {
   // マス配列の走査
   for(var i = 0; i < 9; i++) {
     for (var j = 0; j < 9; j++) {
@@ -261,8 +257,8 @@ ban.draw = function () {
       var masuId = "#masu" + i + j;
 
       // マスに駒がある場合
-      if(ban.masu[i][j].piece != null) {
-        var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage(ban.masu[i][j]);
+      if(board.masu[i][j].piece != null) {
+        var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.masu[i][j]);
         $(masuId).html("<img class='piece_image' width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
       } else {
@@ -273,16 +269,16 @@ ban.draw = function () {
 };
 
 //もち駒の描画処理
-ban.drawCapturedPiece = function(player) {
+board.drawCapturedPiece = function(player) {
   for(var count = 0; count <= 19; count++) {
     $("#capturedPiece" + player + count).html("");
   }
 
-  for(var count = 0; count < ban.capturedPiece[player].length; count++ ){
+  for(var count = 0; count < board.capturedPiece[player].length; count++ ){
 
     //駒情報の格納
-    var piece = ban.capturedPiece[player][count];
-    var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage({"piece":piece, "direction":player});
+    var piece = board.capturedPiece[player][count];
+    var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage({"piece":piece, "direction":player});
     var capturedPieceMasu = $("#capturedPiece" + player + count);
 
     capturedPieceMasu.html("<img width='42px' height='49px' src='" + pieceImgSrc + "' />");
@@ -290,44 +286,44 @@ ban.drawCapturedPiece = function(player) {
 };
 
 // 駒の画像を返すメソッド
-ban.getPieceImage = function(masu) {
+board.getPieceImage = function(masu) {
   if(masu.direction === null) {
     alert(masu.piece);
-    return ban.pieceImg[masu.piece][0];
+    return board.pieceImg[masu.piece][0];
   }
 
   if(masu.direction == "North") {
-    return ban.pieceImg[masu.piece][0];
+    return board.pieceImg[masu.piece][0];
 
   } else if (masu.direction == "South") {
-    return ban.pieceImg[masu.piece][1];
+    return board.pieceImg[masu.piece][1];
 
   } else {
-    return ban.pieceImg[masu][0];
+    return board.pieceImg[masu][0];
 
   }
 };
 
 //移動可能範囲に色を塗る
-ban.drawMovableZone = function(doms){
+board.drawMovableZone = function(doms){
   doms.forEach(function(v,i){
     v.css("background-color","#ff7373");
   })
 
-  ban.movableMasuDomObj = doms;
+  board.movableMasuDomObj = doms;
 };
 
-ban.checkmate = function(battleResult) {
+board.checkmate = function(battleResult) {
   if(battleResult == "win") {
-    html = ban.player + " player win!!";
+    html = board.player + " player win!!";
 
   } else {
-    html = ban.player + " player lose...";
+    html = board.player + " player lose...";
   }
 
 //
   var winner_id = 0
-  if(ban.player == "North") {
+  if(board.player == "North") {
     winner_id = 1
   } else {
     winner_id = 2
@@ -352,7 +348,7 @@ ban.checkmate = function(battleResult) {
     }
     },
     close: function(event) {
-    ban.isNoCheckUnload = true;
+    board.isNoCheckUnload = true;
       location.reload();
     }
   });

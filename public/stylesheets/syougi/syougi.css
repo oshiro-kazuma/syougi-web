@@ -1,7 +1,7 @@
 @CHARSET "utf8";
 
 /* 将棋盤のスタイル */
-#ban {
+#board {
   padding:0;
   margin:0;
   width: 520px;
@@ -10,7 +10,7 @@
 }
 
 /* マスのスタイル */
-#ban > div {
+#board > div {
   padding: 4px;
   float: left;
   background: orange;
