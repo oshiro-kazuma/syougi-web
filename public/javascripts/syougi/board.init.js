@@ -116,7 +116,7 @@ var init_captured_piece = function(player) {
       var _i = i;
 
       return function(e) {
-        board.onClickCapturedPiece(_i, player.direction);
+        board.onClickCapturedPiece(_i, player);
       };
     } (i));
   }
