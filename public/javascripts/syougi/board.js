@@ -71,7 +71,7 @@ board.onClickSquare = function(i,j) {
     }
 
     if(isMovable == true) {
-      $('#sound-file').get(0).play();
+      playSound();
 
       //もち駒の場合
       if(board.selectedPiece.j == "South" || board.selectedPiece.j == "North") {
@@ -333,3 +333,7 @@ var getPieceImage = function(square) {
 
   }
 };
+
+var playSound = function() {
+  $('#sound-file').get(0).play();
+}
