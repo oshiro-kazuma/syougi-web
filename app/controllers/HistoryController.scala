@@ -7,17 +7,23 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 
+import scalaz.Reader
+
 class HistoryController extends Controller {
 
   val datetimeFormat = "yyyy-MM-dd HH:mm"
 
   def index = Action {
-    val histories: Seq[History] = HistoryRepository.ofMemory.resolveAll()
+    val histories: Seq[History] = provider(History.resolveAll())
     Ok(views.html.history(histories))
   }
 
   def show(id: String) = Action {
-    val histories: Seq[History] = HistoryRepository.ofMemory.resolveById(HistoryId(id)).toSeq
+    val histories: Seq[History] = provider(
+      for {
+        history <- History.resolve(HistoryId(id))
+      } yield history.toSeq
+    )
     Ok(views.html.history(histories))
   }
 
@@ -25,17 +31,21 @@ class HistoryController extends Controller {
     historyCreateForm.bindFromRequest.fold(
       formWithErrors => BadRequest("error"),
       form => {
-        HistoryRepository.ofMemory.store(form.asEntity)
+        provider(form.asEntity.store)
         Ok("ok")
       }
     )
   }
 
-  case class HistoryCreateForm(time: DateTime, winner: Int) {
+  private[this] def provider[A](reader: Reader[HistoryRepository, A]) = {
+    reader(HistoryRepository.ofMemory )
+  }
+
+  private[this] case class HistoryCreateForm(time: DateTime, winner: Int) {
     def asEntity = History(id = EmptyHistoryId, time = time, winner = Player(winner))
   }
 
-  private def historyCreateForm = Form {
+  private[this]  def historyCreateForm = Form {
     mapping(
       "time" -> jodaDate(datetimeFormat),
       "winner" -> number
