@@ -6,7 +6,7 @@ var board = {};
 
 board.onClickCapturedPiece = function(i, player) {
   //もち駒選択
-  if (board.isSelectMode == false) {
+  if (board.isChoiceMode == false) {
     if((board.player.direction == player.direction) && (board.capturedPiece[player.direction][i] != null)) {
       board.selectedPiece.i = i;
       board.selectedPiece.j = player.direction;
@@ -14,109 +14,114 @@ board.onClickCapturedPiece = function(i, player) {
       board.movableZone = findCapturedPieceMovableZone();
       var square = findSquareDom(board.movableZone);
 
-      //移動できる範囲に色を塗る
       board.drawMovableZone(square);
-      board.isSelectMode = true;
+      board.isChoiceMode = true;
     }
   //もう一度クリックしたとき
   } else {
-    board.isSelectMode = false;
-
-    //移動可能範囲の背景色を戻す
-    for(var count = 0; count < board.movableSquareDomObj.length; count++ ){
-      board.movableSquareDomObj[count].css("background-color","orange");
-    }
-    //配列削除処理
-    board.movableSquareDomObj.length = 0;
+    board.isChoiceMode = false;
+    drawClearMovableSquare();
   }
 };
 
 //マスがクリックされた時の処理
 board.onClickSquare = function(i,j) {
-  // 移動する駒を選択する処理
-  if (board.isSelectMode == false) {
-    if((board.square[i][j].piece != null) && (board.square[i][j].direction == board.player.direction)) {
-      board.selectedPiece.i = i;
-      board.selectedPiece.j = j;
-      board.selectedPiece.domObj = $("#square" + i + j);
+  if (board.isChoiceMode == false) {
+    choicePiece(i,j);
 
-      //駒を移動できる範囲の算出
-      board.movableZone = board.getMovableZone(i, j);
-      var square = findSquareDom(board.movableZone);
-
-      //移動できる範囲に色を塗る
-      board.drawMovableZone(square);
-      board.isSelectMode = true;
-    }
-  //選択した駒を、移動する処理
   } else {
-    //非選択状態にする
-    board.isSelectMode = false;
+    board.isChoiceMode = false;
+    drawClearMovableSquare()
 
-    //移動可能範囲の背景色を戻す
-    for(var count = 0; count < board.movableSquareDomObj.length; count++ ){
-      board.movableSquareDomObj[count].css("background-color","orange");
-    }
-
-    //配列削除処理
-    board.movableSquareDomObj.length = 0;
-
-    //移動可能であるかの判定
-    var isMovable = false;
-    for(var count = 0; count < board.movableZone.length; count++ ){
-      if((j == board.movableZone[count][0]) && (i == board.movableZone[count][1])) {
-        isMovable = true;
-        break;
-      }
-    }
-
-    if(isMovable == true) {
+    if(isMovable(i,j)) {
       playSound();
 
       //もち駒の場合
       if(board.selectedPiece.j == "South" || board.selectedPiece.j == "North") {
-
-        //マスの情報を変更する
-        board.square[i][j] = {
-            "piece"    :board.capturedPiece[board.selectedPiece.j][board.selectedPiece.i],
-            "direction"  :board.player.direction
-        };
-        //もち駒を削除
-        board.capturedPiece[board.selectedPiece.j].splice(board.selectedPiece.i, 1);
-        board.drawCapturedPiece(board.player.direction);
-
-        //駒の画像を変更する
-        var pieceImgSrc = "/assets/images/piece/" + getPieceImage(board.square[i][j]);
-        $("#square" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
-
-
-      //通常時
+        moveCapturedPiece(i, j);
       } else {
-        //勝利判定
-        if((board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player.direction)) {
-          board.checkmate("win");
-        }
-
-        //相手の駒を取った場合、もち駒に加える
-        if(board.square[i][j].piece != null) {
-          //もち駒の描画処理
-          board.capturedPiece[board.player.direction].push(getPieceHead(board.square[i][j].piece));
-          board.drawCapturedPiece(board.player.direction);
-        }
-        //駒移動処理
-        movePiece(i, j);
+        if(isWin(i,j)) board.checkmate("win")
+        robPieceIfNeed(i,j);
+        movePiece(i,j);
       }
-
-      //相手のターンに移る
-      if(board.player == board.playerType.black) {
-        board.player = board.playerType.white;
-      } else {
-        board.player = board.playerType.black;
-      }
-      $("#playerInfo").html(board.player.name + "の番です．");
+      
+      turnEnd();
     }
   }
 };
+
+var isWin = function(i, j) {
+  return (board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player.direction)
+}
+
+var choicePiece = function(i,j) {
+  if((board.square[i][j].piece != null) && (board.square[i][j].direction == board.player.direction)) {
+    board.selectedPiece.i = i;
+    board.selectedPiece.j = j;
+    board.selectedPiece.domObj = $("#square" + i + j);
+
+    //駒を移動できる範囲の算出
+    board.movableZone = board.getMovableZone(i, j);
+    var square = findSquareDom(board.movableZone);
+
+    //移動できる範囲に色を塗る
+    board.drawMovableZone(square);
+    board.isChoiceMode = true;
+  }
+}
+
+var isMovable = function(i,j) {
+  var movable = false;
+  for(var count = 0; count < board.movableZone.length; count++ ){
+    if((j == board.movableZone[count][0]) && (i == board.movableZone[count][1])) {
+      movable = true;
+      break;
+    }
+  }
+  return movable;
+}
+
+var moveCapturedPiece = function(i, j) {
+  //マスの情報を変更する
+  board.square[i][j] = {
+    "piece"    :board.capturedPiece[board.selectedPiece.j][board.selectedPiece.i],
+    "direction"  :board.player.direction
+  };
+  //もち駒を削除
+  board.capturedPiece[board.selectedPiece.j].splice(board.selectedPiece.i, 1);
+  board.drawCapturedPiece(board.player.direction);
+
+  //駒の画像を変更する
+  var pieceImgSrc = "/assets/images/piece/" + getPieceImage(board.square[i][j]);
+  $("#square" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
+}
+
+var robPieceIfNeed = function(i, j) {
+  //相手の駒を取った場合、もち駒に加える
+  if(board.square[i][j].piece != null) {
+    //もち駒の描画処理
+    board.capturedPiece[board.player.direction].push(getPieceHead(board.square[i][j].piece));
+    board.drawCapturedPiece(board.player.direction);
+  }
+}
+
+var drawClearMovableSquare = function() {
+  for(var count = 0; count < board.movableSquareDomObj.length; count++ ){
+    board.movableSquareDomObj[count].css("background-color","orange");
+  }
+  board.movableSquareDomObj.length = 0;
+}
+
+var turnEnd = function() {
+  //相手のターンに移る
+  if(board.player == board.playerType.black) {
+    board.player = board.playerType.white;
+  } else {
+    board.player = board.playerType.black;
+  }
+  $("#playerInfo").html(board.player.name + "の番です．");
+}
+
 //駒の移動処理
 var movePiece = function(i, j) {
   //マスの情報を変更する

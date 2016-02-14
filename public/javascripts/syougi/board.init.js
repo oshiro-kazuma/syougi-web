@@ -13,7 +13,7 @@ var init_play_data = function() {
   board.player = board.playerType.black;
   board.partnerPlayer = board.playerType.white;
   board.nextPlayer = board.playerType.black;
-  board.isSelectMode = false; //駒を選択中かどうか
+  board.isChoiceMode = false; //駒を選択中かどうか
   board.isMoveDataRemoving = true; //ページを離れるときに、駒移動情報を削除するかどうか
   board.isNoCheckUnload == false; //ページを離れるときに、確認しないかどうか
 
