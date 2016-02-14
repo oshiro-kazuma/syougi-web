@@ -32,7 +32,7 @@ var getMovableZone1 = function(i, j, piece){
     var zone = board.pieceMovableZone[piece][count];
 
     //移動オフセット格納
-    if(board.square[i][j].direction == "North"){
+    if(board.square[i][j].direction == board.playerType.black.direction){
       var yOffset = i + ((-1) * zone[0]);
       var xOffset = j + ((-1) * zone[1]);
     } else {
@@ -43,7 +43,7 @@ var getMovableZone1 = function(i, j, piece){
     if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
 
       //移動可能範囲内にあった場合
-      if (board.square[yOffset][xOffset].direction != board.player) {
+      if (board.square[yOffset][xOffset].direction != board.player.direction) {
 
         //移動可能ゾーンを格納
         returnZone.push([xOffset,yOffset]);
@@ -64,7 +64,7 @@ var getMovableZone2 = function(i, j, piece){
     var zone = board.pieceMovableZone[piece][count];
 
     //移動オフセット格納
-    if(board.square[i][j].direction == "North"){
+    if(board.square[i][j].direction == board.playerType.black.direction){
       var yOffset = i + ((-1) * zone[0]);
       var xOffset = j + ((-1) * zone[1]);
     } else {
@@ -78,12 +78,12 @@ var getMovableZone2 = function(i, j, piece){
         //移動可能ゾーンを格納
         returnZone.push([xOffset,yOffset]);
       //相手の駒の場合
-      } else if (board.square[yOffset][xOffset].direction != board.player) {
+      } else if (board.square[yOffset][xOffset].direction != board.player.direction) {
         //移動可能ゾーンを格納
         returnZone.push([xOffset,yOffset]);
         break;
       //それ以外
-      } else if (board.square[yOffset][xOffset].direction == board.player) {
+      } else if (board.square[yOffset][xOffset].direction == board.player.direction) {
         break;
       }
     }
@@ -101,7 +101,7 @@ var getMovableZone3 = function(i, j, piece){
     var zone = board.pieceMovableZone[piece][count];
 
     //移動オフセット格納
-    if(board.square[i][j].direction == "North"){
+    if(board.square[i][j].direction == board.playerType.black.direction){
       var yOffset = i + ((-1) * zone[0]);
       var xOffset = j + ((-1) * zone[1]);
     } else {
@@ -116,16 +116,16 @@ var getMovableZone3 = function(i, j, piece){
           //移動可能ゾーンを格納
           returnZone.push([xOffset,yOffset]);
         //相手の駒の場合
-        } else if (board.square[yOffset][xOffset].direction != board.player) {
+        } else if (board.square[yOffset][xOffset].direction != board.player.direction) {
           //移動可能ゾーンを格納
           returnZone.push([xOffset,yOffset]);
           break;
         //それ以外
-        } else if (board.square[yOffset][xOffset].direction == board.player) {
+        } else if (board.square[yOffset][xOffset].direction == board.player.direction) {
           break;
         }
         //移動オフセット格納
-        if(board.square[i][j].direction == "North"){
+        if(board.square[i][j].direction == board.playerType.black.direction){
           var yOffset = yOffset + ((-1) * zone[0]);
           var xOffset = xOffset + ((-1) * zone[1]);
         } else {
@@ -148,7 +148,7 @@ var getMovableZone4 = function(i, j, piece){
     var zone = board.pieceMovableZone[piece][count];
 
     //移動オフセット格納
-    if(board.square[i][j].direction == "North"){
+    if(board.square[i][j].direction == board.playerType.black.direction){
       var yOffset = i + ((-1) * zone[0]);
       var xOffset = j + ((-1) * zone[1]);
     } else {
@@ -163,16 +163,16 @@ var getMovableZone4 = function(i, j, piece){
           //移動可能ゾーンを格納
           returnZone.push([xOffset,yOffset]);
         //相手の駒の場合
-        } else if (board.square[yOffset][xOffset].direction != board.player) {
+        } else if (board.square[yOffset][xOffset].direction != board.player.direction) {
           //移動可能ゾーンを格納
           returnZone.push([xOffset,yOffset]);
           break;
-        } else if (board.square[yOffset][xOffset].direction == board.player) {
+        } else if (board.square[yOffset][xOffset].direction == board.player.direction) {
           break;
         }
 
         //移動オフセット格納
-        if(board.square[i][j].direction == "North"){
+        if(board.square[i][j].direction == board.playerType.black.direction){
           var yOffset = yOffset + ((-1) * zone[0]);
           var xOffset = xOffset + ((-1) * zone[1]);
         } else {
@@ -193,7 +193,7 @@ var getMovableZone4 = function(i, j, piece){
     var Yoffset = 0;
 
     //移動オフセット格納
-    if(board.square[i][j].direction == "North"){
+    if(board.square[i][j].direction == board.playerType.black.direction){
       var yOffset = i + ((-1) * zone[0]);
       var xOffset = j + ((-1) * zone[1]);
     } else {
@@ -202,7 +202,7 @@ var getMovableZone4 = function(i, j, piece){
     }
 
     if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
-      if (board.square[yOffset][xOffset].direction != board.player) {
+      if (board.square[yOffset][xOffset].direction != board.player.direction) {
         //移動可能ゾーンを格納
         returnZone.push([xOffset,yOffset]);
       }

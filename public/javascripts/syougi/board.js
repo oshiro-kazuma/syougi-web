@@ -7,9 +7,9 @@ var board = {};
 board.onClickCapturedPiece = function(i, player) {
   //もち駒選択
   if (board.isSelectMode == false) {
-    if((board.player == player) && (board.capturedPiece[player][i] != null)) {
+    if((board.player.direction == player.direction) && (board.capturedPiece[player.direction][i] != null)) {
       board.selectedPiece.i = i;
-      board.selectedPiece.j = player;
+      board.selectedPiece.j = player.direction;
 
       board.movableZone = findCapturedPieceMovableZone();
       var square = findSquareDom(board.movableZone);
@@ -35,7 +35,7 @@ board.onClickCapturedPiece = function(i, player) {
 board.onClickSquare = function(i,j) {
   // 移動する駒を選択する処理
   if (board.isSelectMode == false) {
-    if((board.square[i][j].piece != null) && (board.square[i][j].direction == board.player)) {
+    if((board.square[i][j].piece != null) && (board.square[i][j].direction == board.player.direction)) {
       board.selectedPiece.i = i;
       board.selectedPiece.j = j;
       board.selectedPiece.domObj = $("#square" + i + j);
@@ -79,11 +79,11 @@ board.onClickSquare = function(i,j) {
         //マスの情報を変更する
         board.square[i][j] = {
             "piece"    :board.capturedPiece[board.selectedPiece.j][board.selectedPiece.i],
-            "direction"  :board.player
+            "direction"  :board.player.direction
         };
         //もち駒を削除
         board.capturedPiece[board.selectedPiece.j].splice(board.selectedPiece.i, 1);
-        board.drawCapturedPiece(board.player);
+        board.drawCapturedPiece(board.player.direction);
 
         //駒の画像を変更する
         var pieceImgSrc = "/assets/images/piece/" + getPieceImage(board.square[i][j]);
@@ -93,7 +93,7 @@ board.onClickSquare = function(i,j) {
       //通常時
       } else {
         //勝利判定
-        if((board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player)) {
+        if((board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player.direction)) {
           board.checkmate("win");
         }
 
@@ -101,8 +101,8 @@ board.onClickSquare = function(i,j) {
         if(board.square[i][j].piece != null) {
 
           //もち駒の描画処理
-          board.capturedPiece[board.player].push(getPieceHead(board.square[i][j].piece));
-          board.drawCapturedPiece(board.player);
+          board.capturedPiece[board.player.direction].push(getPieceHead(board.square[i][j].piece));
+          board.drawCapturedPiece(board.player.direction);
         }
         //駒移動処理
         movePiece(i, j);
@@ -110,14 +110,12 @@ board.onClickSquare = function(i,j) {
       }
 
       //相手のターンに移る
-      if(board.player == "North") {
-        board.player = "South";
-        $("#playerInfo").html("南の番です．");
-
+      if(board.player == board.playerType.black) {
+        board.player = board.playerType.white;
       } else {
-        board.player = "North";
-        $("#playerInfo").html("北の番です．");
+        board.player = board.playerType.black;
       }
+      $("#playerInfo").html(board.player.name + "の番です．");
     }
   }
 };
@@ -126,7 +124,7 @@ var movePiece = function(i, j) {
   //マスの情報を変更する
   board.square[i][j] = {
       "piece"    :board.square[board.selectedPiece.i][board.selectedPiece.j].piece,
-      "direction"  :board.player
+      "direction"  :board.player.direction
   };
 
   board.square[board.selectedPiece.i][board.selectedPiece.j] = {
@@ -153,7 +151,7 @@ var movePiece = function(i, j) {
 //成金処理
 // TODO: と金に成のは強制じゃないらしい。ユーザーに選ばせる必要あり。
 var narikin = function(data) {
-  if(data.player == "North"){
+  if(data.player == board.playerType.black){
     if((data.dst_j >= 0 && data.dst_j < 3) || (data.src_j >= 0 && data.src_j < 3)) {
       setNarikin(data.dst_i, data.dst_j, data.piece);
     }
@@ -212,20 +210,15 @@ board.drawMovableZone = function(doms){
 
 board.checkmate = function(battleResult) {
   if(battleResult == "win") {
-    html = board.player + " player win!!";
+    html = board.player.name + " player win!!";
 
   } else {
-    html = board.player + " player lose...";
+    html = board.player.name + " player lose...";
   }
 
   var winner_id = 0
-  if(board.player == "North") {
-    winner_id = 1
-  } else {
-    winner_id = 2
-  }
   $.post("/histories",{
-    'winner': winner_id,
+    'winner': board.player.id,
     'time': "2015-01-01 11:22"
   });
 

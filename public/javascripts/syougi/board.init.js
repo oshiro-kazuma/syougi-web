@@ -10,9 +10,9 @@ board.init = function() {
 }
 
 var init_play_data = function() {
-  board.player = "North";
-  board.partnerPlayer = "South";
-  board.nextPlayer = "North";
+  board.player = board.playerType.black;
+  board.partnerPlayer = board.playerType.white;
+  board.nextPlayer = board.playerType.black;
   board.isSelectMode = false; //駒を選択中かどうか
   board.isMoveDataRemoving = true; //ページを離れるときに、駒移動情報を削除するかどうか
   board.isNoCheckUnload == false; //ページを離れるときに、確認しないかどうか
@@ -85,17 +85,17 @@ var add_square_dom = function(i, j) {
 
 //もち駒盤の初期化処理
 var init_captured_piece_all = function() {
-  init_captured_piece("North");
-  init_captured_piece("South");
+  init_captured_piece(board.playerType.black);
+  init_captured_piece(board.playerType.white);
 };
 
 var init_captured_piece = function(player) {
   for(var i = 0; i < 20; i++) {
     // マスの追加
-    var html = "<div class='capturedPiece' id='capturedPiece" + player + i +"'></div>";
-    $("#capturedPiece" + player).append(html);
+    var html = "<div class='capturedPiece' id='capturedPiece" + player.direction + i +"'></div>";
+    $("#capturedPiece" + player.direction).append(html);
 
-    var piece = $("#capturedPiece"+ player + i);
+    var piece = $("#capturedPiece"+ player.direction + i);
 
     // マウスがのっかった時のイベントの登録
     piece.hover(
@@ -116,7 +116,7 @@ var init_captured_piece = function(player) {
       var _i = i;
 
       return function(e) {
-        board.onClickCapturedPiece(_i, player);
+        board.onClickCapturedPiece(_i, player.direction);
       };
     } (i));
   }

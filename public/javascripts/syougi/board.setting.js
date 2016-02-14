@@ -3,6 +3,11 @@
  * 設定関係、ロジックを含まないのリテラルデータ
  */
 
+board.playerType = {
+  black: {id: 1, name: "先手", direction: "North"},
+  white: {id: 2, name: "後手", direction: "South"},
+}
+
 // 駒の画像の設定
 board.pieceImg = {
 
