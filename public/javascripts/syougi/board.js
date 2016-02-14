@@ -4,27 +4,17 @@
 //名前空間の定義
 var board = {};
 
+// 持ち駒を選択
 board.onClickCapturedPiece = function(i, player) {
-  //もち駒選択
   if (board.isChoiceMode == false) {
-    if((board.player.direction == player.direction) && (board.capturedPiece[player.direction][i] != null)) {
-      board.selectedPiece.i = i;
-      board.selectedPiece.j = player.direction;
-
-      board.movableZone = findCapturedPieceMovableZone();
-      var square = findSquareDom(board.movableZone);
-
-      board.drawMovableZone(square);
-      board.isChoiceMode = true;
-    }
-  //もう一度クリックしたとき
+    choiceCapturedPiece(i, player);
   } else {
     board.isChoiceMode = false;
     drawClearMovableSquare();
   }
 };
 
-//マスがクリックされた時の処理
+// マスを選択
 board.onClickSquare = function(i,j) {
   if (board.isChoiceMode == false) {
     choicePiece(i,j);
@@ -37,7 +27,7 @@ board.onClickSquare = function(i,j) {
       playSound();
 
       //もち駒の場合
-      if(board.selectedPiece.j == "South" || board.selectedPiece.j == "North") {
+      if(board.selectedPiece.isCapturedPiece == true) {
         moveCapturedPiece(i, j);
       } else {
         if(isWin(i,j)) board.checkmate("win")
@@ -54,17 +44,28 @@ var isWin = function(i, j) {
   return (board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player.direction)
 }
 
+var choiceCapturedPiece = function(i, player) {
+    if((board.player.direction == player.direction) && (board.capturedPiece[player.direction][i] != null)) {
+      board.selectedPiece.i = i;
+      board.selectedPiece.isCapturedPiece = true;
+
+      board.movableZone = findCapturedPieceMovableZone();
+      var square = findSquareDom(board.movableZone);
+
+      board.drawMovableZone(square);
+      board.isChoiceMode = true;
+    }
+}
+
 var choicePiece = function(i,j) {
   if((board.square[i][j].piece != null) && (board.square[i][j].direction == board.player.direction)) {
     board.selectedPiece.i = i;
     board.selectedPiece.j = j;
+    board.selectedPiece.isCapturedPiece = false;
     board.selectedPiece.domObj = $("#square" + i + j);
 
-    //駒を移動できる範囲の算出
     board.movableZone = board.getMovableZone(i, j);
     var square = findSquareDom(board.movableZone);
-
-    //移動できる範囲に色を塗る
     board.drawMovableZone(square);
     board.isChoiceMode = true;
   }
@@ -84,11 +85,11 @@ var isMovable = function(i,j) {
 var moveCapturedPiece = function(i, j) {
   //マスの情報を変更する
   board.square[i][j] = {
-    "piece"    :board.capturedPiece[board.selectedPiece.j][board.selectedPiece.i],
-    "direction"  :board.player.direction
+    "piece"     : board.capturedPiece[board.player.direction][board.selectedPiece.i],
+    "direction" : board.player.direction
   };
   //もち駒を削除
-  board.capturedPiece[board.selectedPiece.j].splice(board.selectedPiece.i, 1);
+  board.capturedPiece[board.player.direction].splice(board.selectedPiece.i, 1);
   board.drawCapturedPiece(board.player.direction);
 
   //駒の画像を変更する
@@ -97,9 +98,7 @@ var moveCapturedPiece = function(i, j) {
 }
 
 var robPieceIfNeed = function(i, j) {
-  //相手の駒を取った場合、もち駒に加える
   if(board.square[i][j].piece != null) {
-    //もち駒の描画処理
     board.capturedPiece[board.player.direction].push(getPieceHead(board.square[i][j].piece));
     board.drawCapturedPiece(board.player.direction);
   }

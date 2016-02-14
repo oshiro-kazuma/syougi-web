@@ -20,6 +20,7 @@ var init_play_data = function() {
   //選択中の駒情報
   board.selectedPiece = {
     "domObj" : null,
+    "isCapturedPiece" : false,
     "i" : null,
     "j" : null
   };
