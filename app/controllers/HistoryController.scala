@@ -41,13 +41,13 @@ class HistoryController extends Controller {
     reader(HistoryRepository.ofMemory)
   }
 
-  private[this] case class HistoryCreateForm(time: DateTime, winner: Int) {
-    def asEntity = History(id = EmptyHistoryId, time = time, winner = Player(winner))
+  private[this] case class HistoryCreateForm(timestamp: Long, winner: Int) {
+    def asEntity = History(id = EmptyHistoryId, time = new DateTime(timestamp), winner = Player(winner))
   }
 
   private[this]  def historyCreateForm = Form {
     mapping(
-      "time" -> jodaDate(datetimeFormat),
+      "timestamp" -> longNumber,
       "winner" -> number.verifying(Seq(1,2).contains(_))
     )(HistoryCreateForm.apply)(HistoryCreateForm.unapply)
   }

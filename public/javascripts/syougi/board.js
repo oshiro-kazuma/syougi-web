@@ -217,7 +217,7 @@ board.checkmate = function(battleResult) {
   var winner_id = 0
   $.post("/histories",{
     'winner': board.player.id,
-    'time': "2015-01-01 11:22"
+    'timestamp': Math.floor(new Date().getTime())
   });
 
   //ダイアログの表示

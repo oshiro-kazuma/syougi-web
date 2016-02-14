@@ -24,7 +24,7 @@
                 <tbody>
                     @for(h <- histories) {
                     <tr>
-                        <td>@h.time</td>
+                        <td>@h.time.toString("yyyy-MM-dd HH:mm")</td>
                         <td>@h.winner.name</td>
                         <td>@h.id.value</td>
                     </tr>
