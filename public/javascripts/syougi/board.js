@@ -9,7 +9,7 @@ var findCapturedPieceMovableZone = function() {
   //駒を移動できる範囲の算出
   for(var x = 0; x < 9; x++) {
     for(var y = 0; y < 9; y++) {
-      if(board.masu[x][y].piece == null) {
+      if(board.square[x][y].piece == null) {
         zone.push([y,x]);
       }
     }
@@ -17,12 +17,12 @@ var findCapturedPieceMovableZone = function() {
   return zone;
 }
 
-var pickMasuDom = function(zone) {
+var pickSquareDom = function(zone) {
   var doms = new Array;
   for(var count = 0; count < zone.length; count++ ) {
     var x = zone[count][0];
     var y = zone[count][1];
-    doms.push($("#masu" + y + x));
+    doms.push($("#square" + y + x));
   }
   return doms;
 }
@@ -36,10 +36,10 @@ board.onClickCapturedPiece = function(i, player) {
       board.selectedPiece.j = player;
 
       board.movableZone = findCapturedPieceMovableZone();
-      var masu = pickMasuDom(board.movableZone);
+      var square = pickSquareDom(board.movableZone);
 
       //移動できる範囲に色を塗る
-      board.drawMovableZone(masu);
+      board.drawMovableZone(square);
       board.isSelectMode = true;
     }
   //もう一度クリックしたとき
@@ -47,30 +47,30 @@ board.onClickCapturedPiece = function(i, player) {
     board.isSelectMode = false;
 
     //移動可能範囲の背景色を戻す
-    for(var count = 0; count < board.movableMasuDomObj.length; count++ ){
-      board.movableMasuDomObj[count].css("background-color","orange");
+    for(var count = 0; count < board.movableSquareDomObj.length; count++ ){
+      board.movableSquareDomObj[count].css("background-color","orange");
     }
     //配列削除処理
-    board.movableMasuDomObj.length = 0;
+    board.movableSquareDomObj.length = 0;
   }
 };
 
 //マスがクリックされた時の処理
-board.onClickMasu = function(i,j) {
+board.onClickSquare = function(i,j) {
 
   // 移動する駒を選択する処理
   if (board.isSelectMode == false) {
-    if((board.masu[i][j].piece != null) && (board.masu[i][j].direction == board.player)) {
+    if((board.square[i][j].piece != null) && (board.square[i][j].direction == board.player)) {
       board.selectedPiece.i = i;
       board.selectedPiece.j = j;
-      board.selectedPiece.domObj = $("#masu" + i + j);
+      board.selectedPiece.domObj = $("#square" + i + j);
 
       //駒を移動できる範囲の算出
       board.movableZone = board.getMovableZone(i, j);
-      var masu = pickMasuDom(board.movableZone);
+      var square = pickSquareDom(board.movableZone);
 
       //移動できる範囲に色を塗る
-      board.drawMovableZone(masu);
+      board.drawMovableZone(square);
       board.isSelectMode = true;
     }
   //選択した駒を、移動する処理
@@ -79,12 +79,12 @@ board.onClickMasu = function(i,j) {
     board.isSelectMode = false;
 
     //移動可能範囲の背景色を戻す
-    for(var count = 0; count < board.movableMasuDomObj.length; count++ ){
-      board.movableMasuDomObj[count].css("background-color","orange");
+    for(var count = 0; count < board.movableSquareDomObj.length; count++ ){
+      board.movableSquareDomObj[count].css("background-color","orange");
     }
 
     //配列削除処理
-    board.movableMasuDomObj.length = 0;
+    board.movableSquareDomObj.length = 0;
 
     //移動可能であるかの判定
     var isMovable = false;
@@ -102,7 +102,7 @@ board.onClickMasu = function(i,j) {
       if(board.selectedPiece.j == "South" || board.selectedPiece.j == "North") {
 
         //マスの情報を変更する
-        board.masu[i][j] = {
+        board.square[i][j] = {
             "piece"    :board.capturedPiece[board.selectedPiece.j][board.selectedPiece.i],
             "direction"  :board.player
         };
@@ -111,22 +111,22 @@ board.onClickMasu = function(i,j) {
         board.drawCapturedPiece(board.player);
 
         //駒の画像を変更する
-        var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.masu[i][j]);
-        $("#masu" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
+        var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.square[i][j]);
+        $("#square" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
 
       //通常時
       } else {
         //勝利判定
-        if((board.masu[i][j].piece == "王") && (board.masu[i][j].direction != board.player)) {
+        if((board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player)) {
           board.checkmate("win");
         }
 
         //相手の駒を取った場合、もち駒に加える
-        if(board.masu[i][j].piece != null) {
+        if(board.square[i][j].piece != null) {
 
           //もち駒の描画処理
-          board.capturedPiece[board.player].push(board.getPieceHead(board.masu[i][j].piece));
+          board.capturedPiece[board.player].push(board.getPieceHead(board.square[i][j].piece));
           board.drawCapturedPiece(board.player);
         }
         //駒移動処理
@@ -151,12 +151,12 @@ board.onClickMasu = function(i,j) {
 board.movePiece = function(i, j) {
 
   //マスの情報を変更する
-  board.masu[i][j] = {
-      "piece"    :board.masu[board.selectedPiece.i][board.selectedPiece.j].piece,
+  board.square[i][j] = {
+      "piece"    :board.square[board.selectedPiece.i][board.selectedPiece.j].piece,
       "direction"  :board.player
   };
 
-  board.masu[board.selectedPiece.i][board.selectedPiece.j] = {
+  board.square[board.selectedPiece.i][board.selectedPiece.j] = {
       "piece"     : null,
       "direction" : null
   };
@@ -168,13 +168,13 @@ board.movePiece = function(i, j) {
     "dst_i" : i,
     "dst_j" : j,
     "player" : board.player,
-    "piece" : board.masu[i][j].piece
+    "piece" : board.square[i][j].piece
   });
 
   //マスの画像を変更する
-  var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.masu[i][j]);
-  $("#masu" + board.selectedPiece.i + board.selectedPiece.j).html("");
-  $("#masu" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
+  var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.square[i][j]);
+  $("#square" + board.selectedPiece.i + board.selectedPiece.j).html("");
+  $("#square" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
 };
 
@@ -199,22 +199,22 @@ board.narikin = function(data) {
 board.setNarikin = function (i, j, piece) {
   switch(piece)  {
     case '飛':
-      board.masu[i][j].piece = '竜';
+      board.square[i][j].piece = '竜';
       break;
     case '角':
-      board.masu[i][j].piece = '馬';
+      board.square[i][j].piece = '馬';
       break;
     case '歩':
-      board.masu[i][j].piece = 'と';
+      board.square[i][j].piece = 'と';
       break;
     case '銀':
-      board.masu[i][j].piece = "成銀";
+      board.square[i][j].piece = "成銀";
       break;
     case '桂':
-      board.masu[i][j].piece = '圭';
+      board.square[i][j].piece = '圭';
       break;
     case '香':
-      board.masu[i][j].piece = '杏';
+      board.square[i][j].piece = '杏';
       break;
     default:
   }
@@ -254,15 +254,15 @@ board.draw = function () {
   for(var i = 0; i < 9; i++) {
     for (var j = 0; j < 9; j++) {
       // マスにある駒の、画像に変更する
-      var masuId = "#masu" + i + j;
+      var squareId = "#square" + i + j;
 
       // マスに駒がある場合
-      if(board.masu[i][j].piece != null) {
-        var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.masu[i][j]);
-        $(masuId).html("<img class='piece_image' width='47px' height='54px' src='" + pieceImgSrc + "' />");
+      if(board.square[i][j].piece != null) {
+        var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage(board.square[i][j]);
+        $(squareId).html("<img class='piece_image' width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
       } else {
-        $(masuId).html("");
+        $(squareId).html("");
       }
     }
   }
@@ -279,27 +279,27 @@ board.drawCapturedPiece = function(player) {
     //駒情報の格納
     var piece = board.capturedPiece[player][count];
     var pieceImgSrc = "/assets/images/piece/" + board.getPieceImage({"piece":piece, "direction":player});
-    var capturedPieceMasu = $("#capturedPiece" + player + count);
+    var capturedPieceSquare = $("#capturedPiece" + player + count);
 
-    capturedPieceMasu.html("<img width='42px' height='49px' src='" + pieceImgSrc + "' />");
+    capturedPieceSquare.html("<img width='42px' height='49px' src='" + pieceImgSrc + "' />");
   }
 };
 
 // 駒の画像を返すメソッド
-board.getPieceImage = function(masu) {
-  if(masu.direction === null) {
-    alert(masu.piece);
-    return board.pieceImg[masu.piece][0];
+board.getPieceImage = function(square) {
+  if(square.direction === null) {
+    alert(square.piece);
+    return board.pieceImg[square.piece][0];
   }
 
-  if(masu.direction == "North") {
-    return board.pieceImg[masu.piece][0];
+  if(square.direction == "North") {
+    return board.pieceImg[square.piece][0];
 
-  } else if (masu.direction == "South") {
-    return board.pieceImg[masu.piece][1];
+  } else if (square.direction == "South") {
+    return board.pieceImg[square.piece][1];
 
   } else {
-    return board.pieceImg[masu][0];
+    return board.pieceImg[square][0];
 
   }
 };
@@ -310,7 +310,7 @@ board.drawMovableZone = function(doms){
     v.css("background-color","#ff7373");
   })
 
-  board.movableMasuDomObj = doms;
+  board.movableSquareDomObj = doms;
 };
 
 board.checkmate = function(battleResult) {
