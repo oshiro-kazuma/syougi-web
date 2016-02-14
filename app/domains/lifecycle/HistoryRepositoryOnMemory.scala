@@ -8,7 +8,7 @@ import scala.collection.concurrent.TrieMap
 
 class HistoryRepositoryOnMemory extends HistoryRepository {
 
-  val storage: TrieMap[HistoryId, History] = new TrieMap[HistoryId, History]
+  private val storage: TrieMap[HistoryId, History] = new TrieMap[HistoryId, History]
 
   override def resolveAll(): Seq[History] = storage.values.toSeq
 
