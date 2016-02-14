@@ -99,14 +99,12 @@ board.onClickSquare = function(i,j) {
 
         //相手の駒を取った場合、もち駒に加える
         if(board.square[i][j].piece != null) {
-
           //もち駒の描画処理
           board.capturedPiece[board.player.direction].push(getPieceHead(board.square[i][j].piece));
           board.drawCapturedPiece(board.player.direction);
         }
         //駒移動処理
         movePiece(i, j);
-
       }
 
       //相手のターンに移る
@@ -210,10 +208,10 @@ board.drawMovableZone = function(doms){
 
 board.checkmate = function(battleResult) {
   if(battleResult == "win") {
-    html = board.player.name + " player win!!";
+    html = board.player.name + "の勝ち！";
 
   } else {
-    html = board.player.name + " player lose...";
+    html = board.player.name + "の負け…。";
   }
 
   var winner_id = 0
