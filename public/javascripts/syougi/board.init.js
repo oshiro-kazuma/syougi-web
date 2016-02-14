@@ -5,20 +5,17 @@
 board.init = function() {
   init_play_data();
   init_board();
-  init_board_moti_piece_all();
+  init_captured_piece_all();
   init_piece();
 }
 
 var init_play_data = function() {
-  //プレイヤー
   board.player = "North";
   board.partnerPlayer = "South";
   board.nextPlayer = "North";
-  board.isSelectMode = false;    //駒を選択中かどうか
-  board.isMoveDataRemoving = true;  //ページを離れるときに、駒移動情報を削除するかどうか
-  board.isNoCheckUnload == false;  //ページを離れるときに、確認しないかどうか
-  board.isChecingAway = false;    //対戦相手の離席をチェックする状態
-  board.pollingInterval = 2000;    //ポーリングのインターバル設定
+  board.isSelectMode = false; //駒を選択中かどうか
+  board.isMoveDataRemoving = true; //ページを離れるときに、駒移動情報を削除するかどうか
+  board.isNoCheckUnload == false; //ページを離れるときに、確認しないかどうか
 
   //選択中の駒情報
   board.selectedPiece = {
@@ -26,9 +23,11 @@ var init_play_data = function() {
     "i" : null,
     "j" : null
   };
+
   //駒の移動範囲を格納
   board.movableZone;
   board.movableSquareDomObj = new Array();
+
   //もち駒格納変数
   board.capturedPiece = {"South" : new Array(), "North" : new Array() };
 }
@@ -85,12 +84,12 @@ var add_square_dom = function(i, j) {
 };
 
 //もち駒盤の初期化処理
-var init_board_moti_piece_all = function() {
-  init_board_moti_piece("North");
-  init_board_moti_piece("South");
+var init_captured_piece_all = function() {
+  init_captured_piece("North");
+  init_captured_piece("South");
 };
 
-var init_board_moti_piece = function(player) {
+var init_captured_piece = function(player) {
   for(var i = 0; i < 20; i++) {
     // マスの追加
     var html = "<div class='capturedPiece' id='capturedPiece" + player + i +"'></div>";

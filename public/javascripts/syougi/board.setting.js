@@ -2,6 +2,7 @@
  * board.setting.js
  * 設定関係、ロジックを含まないのリテラルデータ
  */
+
 // 駒の画像の設定
 board.pieceImg = {
 
