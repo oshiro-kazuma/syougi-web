@@ -38,7 +38,7 @@ class HistoryController extends Controller {
   }
 
   private[this] def provider[A](reader: Reader[HistoryRepository, A]) = {
-    reader(HistoryRepository.ofMemory )
+    reader(HistoryRepository.ofMemory)
   }
 
   private[this] case class HistoryCreateForm(time: DateTime, winner: Int) {
@@ -48,7 +48,7 @@ class HistoryController extends Controller {
   private[this]  def historyCreateForm = Form {
     mapping(
       "time" -> jodaDate(datetimeFormat),
-      "winner" -> number
+      "winner" -> number.verifying(Seq(1,2).contains(_))
     )(HistoryCreateForm.apply)(HistoryCreateForm.unapply)
   }
 
