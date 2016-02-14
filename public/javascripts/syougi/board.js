@@ -18,7 +18,10 @@ board.onClickCapturedPiece = function(i, player) {
 board.onClickSquare = function(i,j) {
   if (board.isChoiceMode == false) {
     choicePiece(i,j);
-
+  } else if (isDoublePawn(i, j) == true) {
+    board.isChoiceMode = false;
+    drawClearMovableSquare()
+    alert("二歩です")
   } else {
     board.isChoiceMode = false;
     drawClearMovableSquare()
@@ -39,6 +42,19 @@ board.onClickSquare = function(i,j) {
     }
   }
 };
+
+var isDoublePawn = function(i, j) {
+  var doublePawn = false
+  if(board.capturedPiece[board.player.direction][board.selectedPiece.i] == "歩") {
+    [0,1,2,3,4,5,6,7,8].forEach(function(count) {
+      var square = board.square[i][count]
+      if(square.direction == board.player.direction && square.piece == "歩") {
+        doublePawn = true
+      }
+    })
+  }
+  return doublePawn;
+}
 
 var isWin = function(i, j) {
   return (board.square[i][j].piece == "王") && (board.square[i][j].direction != board.player.direction)
