@@ -3,8 +3,8 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /battle                     controllers.Application.battle
+GET     /                           controllers.ApplicationController.index
+GET     /battle                     controllers.ApplicationController.battle
 GET     /histories                  controllers.HistoryController.index
 POST    /histories                  controllers.HistoryController.create
 GET     /histories/:id              controllers.HistoryController.show(id: String)
