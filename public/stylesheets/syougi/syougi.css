@@ -22,7 +22,7 @@
 }
 
 /* 持ち駒盤のスタイル */
-.motiKoma {
+.capturedPiece {
   padding:0;
   margin:0;
   width: 220px;
@@ -31,7 +31,7 @@
 }
 
 /* 持ち駒盤のマスのスタイル */
-.motiKoma > div {
+.capturedPiece > div {
   padding: 4px;
   /* float: left; */
   background: orange;

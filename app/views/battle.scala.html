@@ -28,6 +28,7 @@
     <script src="@routes.Assets.versioned("javascripts/syougi/ban.js")" type="text/javascript"></script>
     <script src="@routes.Assets.versioned("javascripts/syougi/ban.init.js")" type="text/javascript"></script>
     <script src="@routes.Assets.versioned("javascripts/syougi/ban.setting.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("javascripts/syougi/ban.pieces.js")" type="text/javascript"></script>
 
     <!-- 効果音 -->
     <audio id="sound-file" preload="auto">
@@ -48,8 +49,7 @@
 
       //将棋スタート関数
       function start() {
-        ban.init_ban();
-        ban.init_koma();
+        ban.init();
         ban.draw();
       }
 
@@ -72,9 +72,9 @@
 <!-- 将棋盤 -->
 <div id=main>
     <p><span id="playerInfo">北の番です．</span>駒を動かして下さい．</p>
-    <div class="motiKoma" id="motiKomaSouth"></div>
+    <div class="capturedPiece" id="capturedPieceSouth"></div>
     <div id="ban"></div>
-    <div class="motiKoma" id="motiKomaNorth"></div>
+    <div class="capturedPiece" id="capturedPieceNorth"></div>
     <a href="javascript:ban.checkmate('giveup')" class="button">降参</a>
 </div>
 

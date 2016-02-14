@@ -3,7 +3,7 @@
  * 設定関係、ロジックを含まないのリテラルデータ
  */
 // 駒の画像の設定
-ban.komaImg = {
+ban.pieceImg = {
 
   //通常駒
   "歩" : ["fuhyou1.png","fuhyou2.png"],
@@ -26,7 +26,7 @@ ban.komaImg = {
 };
 
 //駒が移動できる範囲
-ban.komaMovableZone =  {
+ban.pieceMovableZone =  {
   "王" : [
     [-1,1],
     [0,1],

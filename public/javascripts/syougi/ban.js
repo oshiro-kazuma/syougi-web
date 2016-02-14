@@ -4,75 +4,55 @@
 //名前空間の定義
 var ban = {};
 
-//プレイヤー
-ban.player = "North";
-ban.partnerPlayer = "South";
-ban.nextPlayer = "North";
-ban.isSelectMode = false;    //駒を選択中かどうか
-ban.isMoveDataRemoving = true;  //ページを離れるときに、駒移動情報を削除するかどうか
-ban.isNoCheckUnload == false;  //ページを離れるときに、確認しないかどうか
-ban.isChecingAway = false;    //対戦相手の離席をチェックする状態
-ban.pollingInterval = 2000;    //ポーリングのインターバル設定
+var findCapturedPieceMovableZone = function() {
+  var zone = new Array();
+  //駒を移動できる範囲の算出
+  for(var x = 0; x < 9; x++) {
+    for(var y = 0; y < 9; y++) {
+      if(ban.masu[x][y].piece == null) {
+        zone.push([y,x]);
+      }
+    }
+  }
+  return zone;
+}
 
-//選択中の駒情報
-ban.selectedKoma = {
-  "domObj" : null,
-  "i" : null,
-  "j" : null
-};
-//駒の移動範囲を格納
-ban.movableZone;
-ban.movableMasuDomObj = new Array();
-//もち駒格納変数
-ban.motiKoma = {"South" : new Array(), "North" : new Array() };
+var pickMasuDom = function(zone) {
+  var doms = new Array;
+  for(var count = 0; count < zone.length; count++ ) {
+    var x = zone[count][0];
+    var y = zone[count][1];
+    doms.push($("#masu" + y + x));
+  }
+  return doms;
+}
 
-
-/* ------------- ここまで初期設定 ------------------------ */
-
-ban.onClickMotiKoma = function(i, player) {
+ban.onClickCapturedPiece = function(i, player) {
 
   //もち駒選択
   if (ban.isSelectMode == false) {
+    if((ban.player == player) && (ban.capturedPiece[player][i] != null)) {
+      ban.selectedPiece.i = i;
+      ban.selectedPiece.j = player;
 
-    if((ban.player == player) && (ban.motiKoma[player][i] != null)) {
-
-      ban.selectedKoma.i = i;
-      ban.selectedKoma.j = player;
-
-      //配列初期化
-      ban.movableZone.length = 0;
-
-      //駒を移動できる範囲の算出
-      for(var x = 0; x < 9; x++) {
-        for(var y = 0; y < 9; y++) {
-          if(ban.masu[x][y].koma == null) {
-            ban.movableZone.push([y,x]);
-          }
-        }
-      }
+      ban.movableZone = findCapturedPieceMovableZone();
+      var masu = pickMasuDom(ban.movableZone);
 
       //移動できる範囲に色を塗る
-      ban.drawMovableZone(ban.movableZone);
-
+      ban.drawMovableZone(masu);
       ban.isSelectMode = true;
     }
-
   //もう一度クリックしたとき
   } else {
-
-    //非選択状態にする
     ban.isSelectMode = false;
 
     //移動可能範囲の背景色を戻す
     for(var count = 0; count < ban.movableMasuDomObj.length; count++ ){
       ban.movableMasuDomObj[count].css("background-color","orange");
     }
-
     //配列削除処理
     ban.movableMasuDomObj.length = 0;
   }
-
-
 };
 
 //マスがクリックされた時の処理
@@ -80,23 +60,23 @@ ban.onClickMasu = function(i,j) {
 
   // 移動する駒を選択する処理
   if (ban.isSelectMode == false) {
-
-    if((ban.masu[i][j].koma != null) && (ban.masu[i][j].direction == ban.player)) {
-      ban.selectedKoma.i = i;
-      ban.selectedKoma.j = j;
-      ban.selectedKoma.domObj = $("#masu" + i + j);
+    console.log("debug!!! false");
+    if((ban.masu[i][j].piece != null) && (ban.masu[i][j].direction == ban.player)) {
+      ban.selectedPiece.i = i;
+      ban.selectedPiece.j = j;
+      ban.selectedPiece.domObj = $("#masu" + i + j);
 
       //駒を移動できる範囲の算出
       ban.movableZone = ban.getMovableZone(i, j);
-      //移動できる範囲に色を塗る
-      ban.drawMovableZone(ban.movableZone);
+      var masu = pickMasuDom(ban.movableZone);
 
+      //移動できる範囲に色を塗る
+      ban.drawMovableZone(masu);
       ban.isSelectMode = true;
     }
-
   //選択した駒を、移動する処理
   } else {
-
+    console.log("debug!!! true");
     //非選択状態にする
     ban.isSelectMode = false;
 
@@ -110,9 +90,11 @@ ban.onClickMasu = function(i,j) {
 
     //移動可能であるかの判定
     var isMovable = false;
+    console.log("debug mobable zone", ban.movableZone);
     for(var count = 0; count < ban.movableZone.length; count++ ){
       if((j == ban.movableZone[count][0]) && (i == ban.movableZone[count][1])) {
         isMovable = true;
+        console.log("mobable ?", isMovable);
         break;
       }
     }
@@ -121,38 +103,38 @@ ban.onClickMasu = function(i,j) {
       $('#sound-file').get(0).play();
 
       //もち駒の場合
-      if(ban.selectedKoma.j == "South" || ban.selectedKoma.j == "North") {
+      if(ban.selectedPiece.j == "South" || ban.selectedPiece.j == "North") {
 
         //マスの情報を変更する
         ban.masu[i][j] = {
-            "koma"    :ban.motiKoma[ban.selectedKoma.j][ban.selectedKoma.i],
+            "piece"    :ban.capturedPiece[ban.selectedPiece.j][ban.selectedPiece.i],
             "direction"  :ban.player
         };
         //もち駒を削除
-        ban.motiKoma[ban.selectedKoma.j].splice(ban.selectedKoma.i, 1);
-        ban.drawMotiKoma(ban.player);
+        ban.capturedPiece[ban.selectedPiece.j].splice(ban.selectedPiece.i, 1);
+        ban.drawCapturedPiece(ban.player);
 
         //駒の画像を変更する
-        var komaImgSrc = "/assets/images/koma/" + ban.getKomaImage(ban.masu[i][j]);
-        $("#masu" + i + j).html("<img width='47px' height='54px' src='" + komaImgSrc + "' />");
+        var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage(ban.masu[i][j]);
+        $("#masu" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
 
       //通常時
       } else {
         //勝利判定
-        if((ban.masu[i][j].koma == "王") && (ban.masu[i][j].direction != ban.player)) {
+        if((ban.masu[i][j].piece == "王") && (ban.masu[i][j].direction != ban.player)) {
           ban.checkmate("win");
         }
 
         //相手の駒を取った場合、もち駒に加える
-        if(ban.masu[i][j].koma != null) {
+        if(ban.masu[i][j].piece != null) {
 
           //もち駒の描画処理
-          ban.motiKoma[ban.player].push(ban.getkomaHead(ban.masu[i][j].koma));
-          ban.drawMotiKoma(ban.player);
+          ban.capturedPiece[ban.player].push(ban.getPieceHead(ban.masu[i][j].piece));
+          ban.drawCapturedPiece(ban.player);
         }
         //駒移動処理
-        ban.moveKoma(i, j);
+        ban.movePiece(i, j);
 
       }
 
@@ -160,7 +142,7 @@ ban.onClickMasu = function(i,j) {
       if(ban.player == "North") {
         ban.player = "South";
         $("#playerInfo").html("南の番です．");
-        
+
       } else {
         ban.player = "North";
         $("#playerInfo").html("北の番です．");
@@ -170,33 +152,33 @@ ban.onClickMasu = function(i,j) {
 
 };
 //駒の移動処理
-ban.moveKoma = function(i, j) {
+ban.movePiece = function(i, j) {
 
   //マスの情報を変更する
   ban.masu[i][j] = {
-      "koma"    :ban.masu[ban.selectedKoma.i][ban.selectedKoma.j].koma,
+      "piece"    :ban.masu[ban.selectedPiece.i][ban.selectedPiece.j].piece,
       "direction"  :ban.player
   };
 
-  ban.masu[ban.selectedKoma.i][ban.selectedKoma.j] = {
-      "koma"     : null,
+  ban.masu[ban.selectedPiece.i][ban.selectedPiece.j] = {
+      "piece"     : null,
       "direction" : null
   };
 
   //成金処理
   ban.narikin({
-    "src_i" : ban.selectedKoma.i,
-    "src_j" : ban.selectedKoma.j,
+    "src_i" : ban.selectedPiece.i,
+    "src_j" : ban.selectedPiece.j,
     "dst_i" : i,
     "dst_j" : j,
     "player" : ban.player,
-    "koma" : ban.masu[i][j].koma
+    "piece" : ban.masu[i][j].piece
   });
 
   //マスの画像を変更する
-  var komaImgSrc = "/assets/images/koma/" + ban.getKomaImage(ban.masu[i][j]);
-  $("#masu" + ban.selectedKoma.i + ban.selectedKoma.j).html("");
-  $("#masu" + i + j).html("<img width='47px' height='54px' src='" + komaImgSrc + "' />");
+  var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage(ban.masu[i][j]);
+  $("#masu" + ban.selectedPiece.i + ban.selectedPiece.j).html("");
+  $("#masu" + i + j).html("<img width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
 };
 
@@ -206,49 +188,46 @@ ban.narikin = function(data) {
 
   if(data.player == "North"){
     if((data.dst_j >= 0 && data.dst_j < 3) || (data.src_j >= 0 && data.src_j < 3)) {
-      ban.setNarikin(data.dst_i, data.dst_j, data.koma);
+      ban.setNarikin(data.dst_i, data.dst_j, data.piece);
     }
 
   } else {
     if((data.dst_j > 5 && data.dst_j < 9) || (data.src_j > 5 && data.src_j < 9)) {
-      ban.setNarikin(data.dst_i, data.dst_j, data.koma);
+      ban.setNarikin(data.dst_i, data.dst_j, data.piece);
     }
   }
 
 };
 
 //駒裏返し処理
-ban.setNarikin = function (i, j, koma) {
-
-  switch(koma)  {
+ban.setNarikin = function (i, j, piece) {
+  switch(piece)  {
     case '飛':
-      ban.masu[i][j].koma = '竜';
+      ban.masu[i][j].piece = '竜';
       break;
     case '角':
-      ban.masu[i][j].koma = '馬';
+      ban.masu[i][j].piece = '馬';
       break;
     case '歩':
-      ban.masu[i][j].koma = 'と';
+      ban.masu[i][j].piece = 'と';
       break;
     case '銀':
-      ban.masu[i][j].koma = "成銀";
+      ban.masu[i][j].piece = "成銀";
       break;
     case '桂':
-      ban.masu[i][j].koma = '圭';
+      ban.masu[i][j].piece = '圭';
       break;
     case '香':
-      ban.masu[i][j].koma = '杏';
+      ban.masu[i][j].piece = '杏';
       break;
     default:
-
   }
-
 };
 
 //駒の表を取得する
-ban.getkomaHead = function (koma) {
+ban.getPieceHead = function (piece) {
 
-  switch(koma)  {
+  switch(piece)  {
     case '竜':
       return "飛";
 
@@ -268,14 +247,13 @@ ban.getkomaHead = function (koma) {
       return '香';
 
     default:
-      return koma;
+      return piece;
 
   }
 };
 
 //駒の描写処理
 ban.draw = function () {
-
   // マス配列の走査
   for(var i = 0; i < 9; i++) {
     for (var j = 0; j < 9; j++) {
@@ -283,346 +261,63 @@ ban.draw = function () {
       var masuId = "#masu" + i + j;
 
       // マスに駒がある場合
-      if(ban.masu[i][j].koma != null) {
-        var komaImgSrc = "/assets/images/koma/" + ban.getKomaImage(ban.masu[i][j]);
-        $(masuId).html("<img class='koma_image' width='47px' height='54px' src='" + komaImgSrc + "' />");
+      if(ban.masu[i][j].piece != null) {
+        var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage(ban.masu[i][j]);
+        $(masuId).html("<img class='piece_image' width='47px' height='54px' src='" + pieceImgSrc + "' />");
 
       } else {
         $(masuId).html("");
       }
     }
   }
-  
 };
 
 //もち駒の描画処理
-ban.drawMotiKoma = function(player) {
-
+ban.drawCapturedPiece = function(player) {
   for(var count = 0; count <= 19; count++) {
-    $("#motiKoma" + player + count).html("");
+    $("#capturedPiece" + player + count).html("");
   }
 
-  for(var count = 0; count < ban.motiKoma[player].length; count++ ){
+  for(var count = 0; count < ban.capturedPiece[player].length; count++ ){
 
     //駒情報の格納
-    var koma = ban.motiKoma[player][count];
-    var komaImgSrc = "/assets/images/koma/" + ban.getKomaImage({"koma":koma, "direction":player});
-    var motiKomaMasu = $("#motiKoma" + player + count);
+    var piece = ban.capturedPiece[player][count];
+    var pieceImgSrc = "/assets/images/piece/" + ban.getPieceImage({"piece":piece, "direction":player});
+    var capturedPieceMasu = $("#capturedPiece" + player + count);
 
-    motiKomaMasu.html("<img width='42px' height='49px' src='" + komaImgSrc + "' />");
+    capturedPieceMasu.html("<img width='42px' height='49px' src='" + pieceImgSrc + "' />");
   }
-
 };
 
 // 駒の画像を返すメソッド
-ban.getKomaImage = function(masu) {
-
+ban.getPieceImage = function(masu) {
   if(masu.direction === null) {
-    alert(masu.koma);
-    return ban.komaImg[masu.koma][0];
+    alert(masu.piece);
+    return ban.pieceImg[masu.piece][0];
   }
 
   if(masu.direction == "North") {
-    return ban.komaImg[masu.koma][0];
+    return ban.pieceImg[masu.piece][0];
 
   } else if (masu.direction == "South") {
-    return ban.komaImg[masu.koma][1];
+    return ban.pieceImg[masu.piece][1];
 
   } else {
-    return ban.komaImg[masu][0];
+    return ban.pieceImg[masu][0];
 
   }
-  
-};
-
-
-//移動可能範囲を算出する
-ban.getMovableZone = function (i, j){
-
-  var koma = ban.masu[i][j].koma;
-
-  //香の場合
-  if (koma == "香") {
-    return ban.getMovableZone2(i,j,koma);
-
-  //飛車・角の場合
-  } else if ((koma == "飛") || (koma == "角")) {
-    return ban.getMovableZone3(i,j,koma);
-
-  //竜・馬の場合
-  } else if ((koma == "竜") || (koma == "馬")) {
-    return ban.getMovableZone4(i,j,koma);
-
-  //飛車、角、香以外の駒の場合
-  } else {
-    return ban.getMovableZone1(i,j,koma);
-  }
-
-};
-
-//飛車、角、香以外の駒の場合
-ban.getMovableZone1 = function(i, j, koma){
-
-  //移動可能ゾーンを格納する
-  var returnZone = new Array();
-
-  $("#debug").html(prettyPrint(ban.komaMovableZone[koma]));
-
-  for (var count = 0; count < ban.komaMovableZone[koma].length; count++ ) {
-
-    //移動可能ゾーンの取得
-    var zone = ban.komaMovableZone[koma][count];
-
-    //データの確認
-    $("#debug").html(prettyPrint(zone));
-
-    //移動オフセット格納
-    if(ban.masu[i][j].direction == "North"){
-      var yOffset = i + ((-1) * zone[0]);
-      var xOffset = j + ((-1) * zone[1]);
-    } else {
-      var yOffset = i + zone[0];
-      var xOffset = j + zone[1];
-    }
-
-    if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
-
-      //移動可能範囲内にあった場合
-      if (ban.masu[yOffset][xOffset].direction != ban.player) {
-
-        //移動可能ゾーンを格納
-        returnZone.push([xOffset,yOffset]);
-      }
-    }
-  }
-
-  return returnZone;
-
-};
-
-//香の場合
-ban.getMovableZone2 = function(i, j, koma){
-
-  //移動可能ゾーンを格納する
-  var returnZone = new Array();
-
-  for (var count = 0; count < ban.komaMovableZone[koma].length; count++ ) {
-
-    //移動可能ゾーンの取得
-    var zone = ban.komaMovableZone[koma][count];
-
-    //移動オフセット格納
-    if(ban.masu[i][j].direction == "North"){
-      var yOffset = i + ((-1) * zone[0]);
-      var xOffset = j + ((-1) * zone[1]);
-    } else {
-      var yOffset = i + zone[0];
-      var xOffset = j + zone[1];
-    }
-
-    if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
-
-      //駒がない場合
-      if (ban.masu[yOffset][xOffset].koma == null) {
-
-        //移動可能ゾーンを格納
-        returnZone.push([xOffset,yOffset]);
-
-      //相手の駒の場合
-      } else if (ban.masu[yOffset][xOffset].direction != ban.player) {
-
-        //移動可能ゾーンを格納
-        returnZone.push([xOffset,yOffset]);
-
-        break;
-
-      //それ以外
-      } else if (ban.masu[yOffset][xOffset].direction == ban.player) {
-        break;
-      }
-
-    }
-  }
-
-  return returnZone;
-
-};
-
-//飛車・角の場合
-ban.getMovableZone3 = function(i, j, koma){
-
-  //移動可能ゾーンを格納する
-  var returnZone = new Array();
-
-  $("#debug").html(prettyPrint(ban.komaMovableZone[koma]));
-
-  for (var count = 0; count < ban.komaMovableZone[koma].length; count++ ) {
-
-    //移動可能ゾーンの取得
-    var zone = ban.komaMovableZone[koma][count];
-
-    //データの確認
-    $("#debug").html(prettyPrint(zone));
-
-    //移動オフセット格納
-    if(ban.masu[i][j].direction == "North"){
-      var yOffset = i + ((-1) * zone[0]);
-      var xOffset = j + ((-1) * zone[1]);
-    } else {
-      var yOffset = i + zone[0];
-      var xOffset = j + zone[1];
-    }
-
-    for(var count2 = 0; count2 < 9; count2++) {
-
-      if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
-
-        //駒がない場合
-        if (ban.masu[yOffset][xOffset].koma == null) {
-
-          //移動可能ゾーンを格納
-          returnZone.push([xOffset,yOffset]);
-
-        //相手の駒の場合
-        } else if (ban.masu[yOffset][xOffset].direction != ban.player) {
-
-          //移動可能ゾーンを格納
-          returnZone.push([xOffset,yOffset]);
-
-          break;
-
-        //それ以外
-        } else if (ban.masu[yOffset][xOffset].direction == ban.player) {
-          break;
-        }
-
-        //移動オフセット格納
-        if(ban.masu[i][j].direction == "North"){
-          var yOffset = yOffset + ((-1) * zone[0]);
-          var xOffset = xOffset + ((-1) * zone[1]);
-        } else {
-          var yOffset = yOffset + zone[0];
-          var xOffset = xOffset + zone[1];
-        }
-
-      }
-    }
-  }
-
-  return returnZone;
-
-};
-
-//竜・馬の場合
-ban.getMovableZone4 = function(i, j, koma){
-
-  //移動可能ゾーンを格納する
-  var returnZone = new Array();
-
-  for (var count = 0; count < 4; count++ ) {
-
-    //移動可能ゾーンの取得
-    var zone = ban.komaMovableZone[koma][count];
-
-    //移動オフセット格納
-    if(ban.masu[i][j].direction == "North"){
-      var yOffset = i + ((-1) * zone[0]);
-      var xOffset = j + ((-1) * zone[1]);
-    } else {
-      var yOffset = i + zone[0];
-      var xOffset = j + zone[1];
-    }
-
-    for(var count2 = 0; count2 < 9; count2++) {
-
-      if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
-
-        //駒がない場合
-        if (ban.masu[yOffset][xOffset].koma == null) {
-
-          //移動可能ゾーンを格納
-          returnZone.push([xOffset,yOffset]);
-
-        //相手の駒の場合
-        } else if (ban.masu[yOffset][xOffset].direction != ban.player) {
-
-          //移動可能ゾーンを格納
-          returnZone.push([xOffset,yOffset]);
-
-          break;
-
-        //それ以外
-        } else if (ban.masu[yOffset][xOffset].direction == ban.player) {
-          break;
-        }
-
-        //移動オフセット格納
-        if(ban.masu[i][j].direction == "North"){
-          var yOffset = yOffset + ((-1) * zone[0]);
-          var xOffset = xOffset + ((-1) * zone[1]);
-        } else {
-          var yOffset = yOffset + zone[0];
-          var xOffset = xOffset + zone[1];
-        }
-
-      }
-    }
-  }
-
-  //1マス移動分の範囲
-  for(var count = 4; count < 8; count++) {
-
-    //移動可能ゾーンの取得
-    var zone = ban.komaMovableZone[koma][count];
-
-    //オフセット設定
-    var Xoffset = 0;
-    var Yoffset = 0;
-
-    //移動オフセット格納
-    if(ban.masu[i][j].direction == "North"){
-      var yOffset = i + ((-1) * zone[0]);
-      var xOffset = j + ((-1) * zone[1]);
-    } else {
-      var yOffset = i + zone[0];
-      var xOffset = j + zone[1];
-    }
-
-    if(( xOffset < 0 || 8 < xOffset || yOffset < 0 || 8 < yOffset) == false ) {
-      if (ban.masu[yOffset][xOffset].direction != ban.player) {
-
-        //移動可能ゾーンを格納
-        returnZone.push([xOffset,yOffset]);
-      }
-    }
-
-  }
-
-  return returnZone;
-
 };
 
 //移動可能範囲に色を塗る
-ban.drawMovableZone = function(drawZone){
+ban.drawMovableZone = function(doms){
+  doms.forEach(function(v,i){
+    v.css("background-color","#ff7373");
+  })
 
-  for(var count = 0; count < drawZone.length; count++ ){
-
-    var x = drawZone[count][0];
-    var y = drawZone[count][1];
-
-    //背景色の変更
-    var domObj = $("#masu" + y + x).css("background-color","#ff7373");
-
-    //後で色を戻すために保存
-    ban.movableMasuDomObj.push(domObj);
-
-  }
-
+  ban.movableMasuDomObj = doms;
 };
 
 ban.checkmate = function(battleResult) {
-
-
   if(battleResult == "win") {
     html = ban.player + " player win!!";
 
@@ -630,7 +325,7 @@ ban.checkmate = function(battleResult) {
     html = ban.player + " player lose...";
   }
 
-  // post server side api
+//
   var winner_id = 0
   if(ban.player == "North") {
     winner_id = 1
