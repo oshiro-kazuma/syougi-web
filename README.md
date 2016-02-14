@@ -1,5 +1,7 @@
 # syougi-web
 
+[demo](http://takuan.me:9000/)
+
 ![screen_shot_top.png](screen_shot_top.png)
 
 ![screen_shot_battle.png](screen_shot_battle.png)
